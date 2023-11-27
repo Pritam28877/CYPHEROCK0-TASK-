@@ -42,18 +42,64 @@ exports.signup = async (req, res, next) => {
   createSendToken(newUser, 201, req, res);
 };
 
-
 exports.login = async (req, res, next) => {
-    const { address, password } = req.body;
-    // 1) Check if email and password exist
-    if (!address || !password) {
-        return next(new AppError("Please provide email and password!", 400));
-    }
-    // 2) Check if user exists && password is correct
-    const user = await User.findOne({ address }).select("+password");
-    if (!user || !(await user.correctPassword(password, user.password))) {
-        return next(new AppError("Incorrect email or password", 401));
-    }
-    // 3) If everything ok, send token to client
-    createSendToken(user, 200, req, res);
-    };
+  const { address, password } = req.body;
+  // 1) Check if email and password exist
+  if (!address || !password) {
+    return next(new AppError("Please provide email and password!", 400));
+  }
+  // 2) Check if user exists && password is correct
+  const user = await User.findOne({ address }).select("+password");
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError("Incorrect email or password", 401));
+  }
+  // 3) If everything ok, send token to client
+  createSendToken(user, 200, req, res);
+};
+
+exports.allToken = async (req, res, next) => {
+  const token = await Token.find();
+  res.status(200).json({
+    status: "success",
+    data: {
+      token,
+    },
+  });
+};
+
+exports.addToken = async (req, res, next) => {
+  const token = await Token.create({
+    name: req.body.name,
+    address: req.body.address,
+    symbol: req.body.symbol,
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      token,
+    },
+  });
+};
+
+exports.allAccount = async (req, res, next) => {
+  const account = await accountModel.find();
+  res.status(200).json({
+    status: "success",
+    data: {
+      account,
+    },
+  });
+};
+
+exports.createAccount = async (req, res, next) => {
+  const account = await accountModel.create({
+    privatekey: req.body.privatekey,
+    address: req.body.address,
+  });
+  res.status(200).json({
+    status: "success",
+    data: {
+      account,
+    },
+  });
+};
