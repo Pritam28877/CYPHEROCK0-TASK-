@@ -39,4 +39,21 @@ exports.signup = async (req, res, next) => {
     privatekey: req.body.privatekey,
     mnemonic: req.body.mnemonic,
   });
+  createSendToken(newUser, 201, req, res);
 };
+
+
+exports.login = async (req, res, next) => {
+    const { address, password } = req.body;
+    // 1) Check if email and password exist
+    if (!address || !password) {
+        return next(new AppError("Please provide email and password!", 400));
+    }
+    // 2) Check if user exists && password is correct
+    const user = await User.findOne({ address }).select("+password");
+    if (!user || !(await user.correctPassword(password, user.password))) {
+        return next(new AppError("Incorrect email or password", 401));
+    }
+    // 3) If everything ok, send token to client
+    createSendToken(user, 200, req, res);
+    };
