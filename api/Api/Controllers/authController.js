@@ -126,3 +126,58 @@ exports.getAllToken = async (req,res,next)=>{
         })
     }
 }
+
+
+exports.createToken = async (req,res,next)=>{
+    try{
+        const newToken = await Token.create(req.body);
+        res.status(201).json({
+            status:'success',
+            data:{
+                newToken
+            }
+        })
+    }catch(err){
+        res.status(400).json({
+            status:'fail',
+            message:err
+        })
+    }
+}
+
+
+exports.createAccount = async (req,res,next)=>{
+    try{
+        const newAccount = await accountModel.create(req.body);
+        res.status(201).json({
+            status:'success',
+            data:{
+                newAccount
+            }
+        })
+    }catch(err){
+        res.status(400).json({
+            status:'fail',
+            message:err
+        })
+    }
+}
+
+
+
+exports.getAccount = async (req,res,next)=>{
+    try{
+        const account = await accountModel.find();
+        res.status(200).json({
+            status:'success',
+            data:{
+                account
+            }
+        })
+    }catch(err){
+        res.status(400).json({
+            status:'fail',
+            message:err
+        })
+    }
+}
